@@ -180,6 +180,10 @@ void* temp() {
 }
 */
 
+bool check_if_challenge_race_won(Courses course) {
+  return (ChallengeRaceBitmask >> course) & 1;
+}
+
 void CreateTrampolines() {
   const uint8_t InitSonicR_B_bytes[4] = { 0x5f, 0x5e, 0x5b, 0xc3 }; 
 
@@ -265,7 +269,11 @@ __declspec(dllexport) void OnFrame() {
 
   switch (GameMode) {
   case GameMode_GrandPrix: /* SonicTokens and ChaosEmeralds */
-    CurrentSonicTokenOrTagCount = ap::received_sonic_tokens(static_cast<Courses>(CurrentCourse));
+    if (ap::sent_challenge_race_win(static_cast<Courses>(CurrentCourse))) {
+      CurrentSonicTokenOrTagCount = 0;
+    } else {
+      CurrentSonicTokenOrTagCount = ap::received_sonic_tokens(static_cast<Courses>(CurrentCourse));
+    }
 
     /* Loop over objects in the current course. If we've sent the item, make the
        object invisible. If we haven't sent the item and the object is invisible,
@@ -295,7 +303,10 @@ __declspec(dllexport) void OnFrame() {
     }
     break;
   case GameMode_TimeAttack: /* Lots of other objects */
-  case GameMode_RaceNoResultsScreen: /* Challenge Races? */
+  case GameMode_ChallengeRace:
+    if (!ap::sent_challenge_race_win(static_cast<Courses>(CurrentCourse)) && check_if_challenge_race_won(static_cast<Courses>(CurrentCourse))) {
+      ap::send_item_challenge_race_win(static_cast<Courses>(CurrentCourse));
+    };
   default:
     break;
   }

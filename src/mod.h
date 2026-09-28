@@ -171,8 +171,8 @@ enum GameMode {
   GameMode_GrandPrix,
   GameMode_MultiPlayer,
   GameMode_TimeAttack,
-  GameMode_From2PPerspective,
-  GameMode_RaceNoResultsScreen,
+  GameMode_ChallengeRaceIntro,
+  GameMode_ChallengeRace,
 };
 
 enum GameModeSubmode {
@@ -198,6 +198,7 @@ FunctionPointer(void, D3D_EndScene, (), 0x4425F0);
 FunctionPointer(void, D3D_ClearViewport, (int color), 0x442650);
 FunctionPointer(void, D3D_Flush, (int val), 0x442680);
 DataPointer(IDirect3DDevice9*, D3DDevice, 0x5EDD14);
+DataPointer(uint8_t, ChallengeRaceBitmask, 0x7AF0C9);
 
 FunctionPointer(void, DrawHUD, (int Player), 0x43DE30);
 FunctionPointer(void, FUN_00412e30, (int player), 0x412e30);

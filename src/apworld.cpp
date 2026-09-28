@@ -14,8 +14,8 @@ namespace {
     // Items sent
     int sent_sonic_tokens[4][5]; // Each individual token matters
     int sent_chaos_emeralds[4]; // 1 = Chaos Emerald 1, 2 = Chaos Emerald 2. Logical OR
-    int sent_grand_prix_wins[5];
-    int sent_challenge_race_wins[4];
+    bool sent_grand_prix_wins[5];
+    bool sent_challenge_race_wins[4];
   };
 
   std::string get_message_item_recv(AP_ItemRecvMessage* message);
@@ -26,6 +26,7 @@ namespace {
   void item_recv_ring(int id);
   void item_recv_sonic_token(int id);
   void location_checked(int id);
+  void location_checked_challenge_race_win(int id);
   void location_checked_chaos_emerald(int id);
   void location_checked_grand_prix_win(int id);
   void location_checked_sonic_token(int id);
@@ -34,7 +35,9 @@ namespace {
 
   std::string get_message_item_recv(AP_ItemRecvMessage* message) {
     std::stringstream stream;
+
     stream << "Received " << message->item << " from " << message->sendPlayer;
+
     return stream.str();
   }
 
@@ -53,10 +56,12 @@ namespace {
     for (int i = 0; i < 7; ++i) {
       game_state.received_chaos_emeralds[i] = 0;
     }
-    for (int i = 0; i < 4; ++i) {
-      game_state.sent_grand_prix_wins[i] = 1;
+    for (int i = 0; i < 5; ++i) {
+      game_state.sent_grand_prix_wins[i] = 0;
     }
-    game_state.sent_grand_prix_wins[4] = 0;
+    for (int i = 0; i < 4; ++i) {
+      game_state.sent_challenge_race_wins[i] = 0;
+    }
   }
 
   void item_recv(int id, bool notify) {
@@ -118,9 +123,19 @@ namespace {
       location_checked_chaos_emerald(id);
     } else if (id >= ap::location::ResortIslandGrandPrixWin && id <= ap::location::RadiantEmeraldGrandPrixWin) {
       location_checked_grand_prix_win(id);
+    } else if (id >= ap::location::ResortIslandChallengeRaceWin && id <= ap::location::RegalRuinChallengeRaceWin) {
+      location_checked_challenge_race_win(id);
     } else {
       PrintDebug("location_checked: Location ID %d not implemented.\n", id);
     }
+  }
+
+  void location_checked_challenge_race_win(int id) {
+    PrintDebug("location_checked_challenge_race_win(%d)\n", id);
+
+    Courses course = (Courses)(1 + (id - ap::location::ResortIslandChallengeRaceWin));
+
+    game_state.sent_challenge_race_wins[course - Courses_ResortIsland] = 1;
   }
 
   void location_checked_chaos_emerald(int id) {
@@ -184,6 +199,12 @@ namespace ap {
     AP_Start();
   }
 
+  void send_item_challenge_race_win(Courses course) {
+    PrintDebug("send_item_challenge_race_win(%d)\n", course);
+
+    AP_SendItem(ap::location::ResortIslandChallengeRaceWin + (course - Courses_ResortIsland));
+  }
+
   void send_item_chaos_emerald(Courses course, int i) {
     PrintDebug("send_item_chaos_emerald(%d, %d)\n", course, i);
 
@@ -191,6 +212,8 @@ namespace ap {
   }
 
   void send_item_grand_prix_win(Courses course) {
+    PrintDebug("send_item_grand_prix_win(%d)\n", course);
+
     AP_SendItem(ap::location::ResortIslandGrandPrixWin + (course - Courses_ResortIsland));
   }
 
@@ -208,6 +231,11 @@ namespace ap {
   // Return number of Sonic Tokens that have been received for a given course.
   int received_sonic_tokens(Courses course) {
     return game_state.received_sonic_tokens[course - Courses_ResortIsland];
+  }
+
+  // Return true if the challenge race for a course has been beaten already. False otherwise.
+  bool sent_challenge_race_win(Courses course) {
+    return game_state.sent_challenge_race_wins[course - Courses_ResortIsland];
   }
 
   // Return true if Chaos Emerald #i on course has been sent already. False otherwise.

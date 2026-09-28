@@ -5,6 +5,7 @@ Locations:
 * Sonic Tokens
 * Chaos Emeralds
 * Grand Prix wins
+* Challenge Race wins
 
 Items:
 * Progressive Sonic Tokens

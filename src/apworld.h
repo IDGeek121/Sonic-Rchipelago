@@ -58,15 +58,21 @@ namespace ap {
     ReactiveFactoryGrandPrixWin,
     RegalRuinGrandPrixWin,
     RadiantEmeraldGrandPrixWin,
+    ResortIslandChallengeRaceWin,
+    RadicalCityChallengeRaceWin,
+    ReactiveFactoryChallengeRaceWin,
+    RegalRuinChallengeRaceWin,
   };
 
   void init(const char*, const char*, const char*);
   const struct message* get_message();
   int received_chaos_emerald_to_file(int i);
   int received_sonic_tokens(Courses course);
+  void send_item_challenge_race_win(Courses course);
   void send_item_chaos_emerald(Courses course, int i);
   void send_item_grand_prix_win(Courses course);
   void send_item_sonic_token(Courses course, int i);
+  bool sent_challenge_race_win(Courses course);
   bool sent_chaos_emerald(Courses course, int i);
   bool sent_grand_prix_win(Courses course);
   bool sent_sonic_token(Courses course, int i);
