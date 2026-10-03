@@ -23,6 +23,15 @@ namespace ap {
     RedChaosEmerald,
     WhiteChaosEmerald,
     Ring,
+    Sonic,
+    Tails,
+    Knuckles,
+    Amy,
+    Robotnik,
+    MetalSonic,
+    TailsDoll,
+    MetalKnuckles,
+    EggRobo,
   };
 
   enum location {
@@ -67,6 +76,7 @@ namespace ap {
   void init(const char*, const char*, const char*);
   const struct message* get_message();
   int received_chaos_emerald_to_file(int i);
+  bool received_character(Characters i);
   int received_sonic_tokens(Courses course);
   void send_item_challenge_race_win(Courses course);
   void send_item_chaos_emerald(Courses course, int i);

@@ -9,7 +9,7 @@ namespace {
     // Items received
     int received_sonic_tokens[4]; // Only the count of tokens matters
     int received_chaos_emeralds[7];
-    int received_characters[9]; // TODO: Figure out if Sonic can be locked
+    bool received_characters[9]; // TODO: Figure out if Sonic can be locked
 
     // Items sent
     int sent_sonic_tokens[4][5]; // Each individual token matters
@@ -23,6 +23,7 @@ namespace {
   void item_clear();
   void item_recv(int id, bool notify);
   void item_recv_chaos_emerald(int id);
+  void item_recv_character(int id);
   void item_recv_ring(int id);
   void item_recv_sonic_token(int id);
   void location_checked(int id);
@@ -56,6 +57,9 @@ namespace {
     for (int i = 0; i < 7; ++i) {
       game_state.received_chaos_emeralds[i] = 0;
     }
+    for (int i = 0; i <= Characters_EggRobo; ++i) {
+      game_state.received_characters[i] = 0;
+    }
     for (int i = 0; i < 5; ++i) {
       game_state.sent_grand_prix_wins[i] = 0;
     }
@@ -83,6 +87,17 @@ namespace {
     case ap::item::WhiteChaosEmerald:
       item_recv_chaos_emerald(id);
       break;
+    case ap::item::Sonic:
+    case ap::item::Tails:
+    case ap::item::Knuckles:
+    case ap::item::Amy:
+    case ap::item::Robotnik:
+    case ap::item::MetalSonic:
+    case ap::item::TailsDoll:
+    case ap::item::MetalKnuckles:
+    case ap::item::EggRobo:
+      item_recv_character(id);
+      break;
     case ap::item::Ring:
       item_recv_ring(50);
       break;
@@ -96,6 +111,12 @@ namespace {
 
     int *ChaosEmerald = &game_state.received_chaos_emeralds[id - ap::item::BlueChaosEmerald];
     *ChaosEmerald = 2;
+  }
+
+  void item_recv_character(int id) {
+    PrintDebug("item_recv_character(%d)\n", id);
+
+    game_state.received_characters[id - ap::item::Sonic] = true;
   }
 
   void item_recv_ring(int count) {
@@ -226,6 +247,10 @@ namespace ap {
   // Return 2 if the file should have the Chaos Emerald at index i [0, 6).
   int received_chaos_emerald_to_file(int i) {
     return game_state.received_chaos_emeralds[i];
+  }
+
+  bool received_character(Characters i) {
+    return game_state.received_characters[i];
   }
 
   // Return number of Sonic Tokens that have been received for a given course.

@@ -333,8 +333,8 @@ void CreateTrampolines() {
 
   WriteCall((void *)0x444596, (void *)&goal);
 
-  // Don't set Chaos Emerald visibility based on file status. We will set this based on location sent status.
-  WriteJump((void *)0x4279fe, (void *)0x427aa3);
+  // Don't set Chaos Emerald or Sonic Token visibility based on file status. We will set this based on location sent status.
+  WriteJump((void *)0x4279a1, (void *)0x427aa3);
 
   // Hook for rendering text before D3D_ScreenSwap
   WriteCall((void *)D3D_ScreenSwap, (void *)&handle_messages);
@@ -397,6 +397,16 @@ __declspec(dllexport) void OnFrame() {
   }
 
   // Syncing state for what we've received
+  int* const file_character_array = &CurrentFileData.SonicUnlocked;
+  for (int i = 0; i <= Characters_EggRobo; ++i) {
+    const Characters character = static_cast<Characters>(i);
+    if (ap::received_character(character)) {
+      file_character_array[i] = 2;
+    } else {
+      file_character_array[i] = 1;
+    }
+  }
+
   int *file_chaos_emerald_array = &CurrentFileData.BlueEmeraldCollected;
   for (int i = 0; i < 7; ++i) {
     file_chaos_emerald_array[i] = ap::received_chaos_emerald_to_file(i);
