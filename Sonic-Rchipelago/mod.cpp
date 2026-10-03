@@ -7,6 +7,34 @@
 #include "config.h"
 
 
+void __declspec(naked) css_left_bound_fix_1() {
+  __asm (
+    "movl %eax, 0x752918\n\t"
+    "dec %eax\n\t"
+    "test %eax, %eax\n\t"
+    "jl .+0x8\n\t"
+    "push $0x430331\n\t"
+    "ret\n\t"
+    "push $0x43034a\n\t"
+    "ret\n\t"
+  );
+}
+
+void __declspec(naked) css_left_bound_fix_2() {
+  __asm (
+    "movl (0x752918), %ecx\n\t"
+    "movl (%ebp), %edx\n\t"
+    "cmp %ecx, %edx\n\t"
+    "jnz .+0x8\n\t"
+    "push $0x430395\n\t"
+    "ret\n\t"
+    "movw %ax, (%esi)\n\t"
+    "cmpw $0x0, (%esi)\n\t"
+    "push $0x430351\n\t"
+    "ret\n\t"
+  );
+}
+
 extern "C" void internal_goal() {
   if (Players[0].Character == Characters_SuperSonic) {
     AP_StoryComplete();
@@ -206,6 +234,10 @@ void CreateTrampolines() {
   // Hook for rendering text before D3D_ScreenSwap
   WriteCall((void *)D3D_ScreenSwap, (void *)&handle_messages);
   //WriteCall((void *)D3D_ScreenSwap, (void *)&temp);
+
+  // Hook for fixing left bounds on the Character Select Screen
+  WriteJump((void *)0x43032c, (void *)&css_left_bound_fix_1);
+  WriteJump((void *)0x43034a, (void *)&css_left_bound_fix_2);
 }
 
 extern "C" {
