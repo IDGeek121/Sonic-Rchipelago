@@ -6,6 +6,40 @@
 #include "mod.h"
 #include "config.h"
 
+extern "C" void internal_css_init_character_selection(int player) {
+  const int* unlocked_characters = &CurrentFileData.SonicUnlocked;
+  for (int i = 0; i <= Characters_EggRobo; ++i) {
+    const Characters character_to_select = static_cast<Characters>(i);
+
+    if (unlocked_characters[character_to_select] == 2) {
+      CharacterSelectScreen_PreviousCharacterSelection[player] = character_to_select;
+      PreviousCharacterSelection[player] = character_to_select;
+      return;
+    }
+  }
+
+  CharacterSelectScreen_PreviousCharacterSelection[player] = Characters_Sonic;
+  PreviousCharacterSelection[player] = Characters_Sonic;
+}
+
+void __declspec(naked) css_init_character_selection() {
+  __asm (
+    "push %eax\n\t"
+    "push %ecx\n\t"
+    "push %edx\n\t"
+
+    "push %eax\n\t"
+    "call _internal_css_init_character_selection\n\t"
+    "add $0x4, %esp\n\t"
+
+    "pop %edx\n\t"
+    "pop %ecx\n\t"
+    "pop %eax\n\t"
+    "push $0x42fde0\n\t"
+    "ret\n\t"
+  );
+}
+
 void css_draw_sonic_portrait() {
   const int portrait_xpos = CharacterSelectScreen_CursorPositionTable[Characters_Sonic] * 2;
   const int portrait_ypos = 360;
@@ -280,6 +314,10 @@ void CreateTrampolines() {
 
   // Hook for rendering Sonic's Character Select Screen portrait
   WriteCall((void *)0x430699, (void *)&css_draw_sonic_portrait);
+
+  // Hook for determining character selection if the previously selected
+  // character is locked, i.e. if Sonic is locked at the start.
+  WriteJump((void *)0x42fdd2, (void *)&css_init_character_selection);
 }
 
 extern "C" {
