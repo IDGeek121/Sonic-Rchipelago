@@ -185,6 +185,7 @@ enum GameModeSubmode {
 const unsigned int TrackArrayLength = 1024;
 DataPointer(TrackArrayEntry*, TrackArray, 0x5F3870);
 DataPointer(int, InDemo, 0x73604C);
+DataArray(int, CharacterSelectScreen_CursorPositionTable, 0x45F098, 8);
 DataPointer(enum GameMode, GameMode, 0x769F24);
 DataPointer(enum GameModeSubmode, GameModeSubmode, 0x7BCB80);
 DataPointer(int, SceneFrameCount, 0x7AF154);

@@ -6,6 +6,45 @@
 #include "mod.h"
 #include "config.h"
 
+void css_draw_sonic_portrait() {
+  const int portrait_xpos = CharacterSelectScreen_CursorPositionTable[Characters_Sonic] * 2;
+  const int portrait_ypos = 360;
+  const int portrait_width = 56;
+  const int portrait_height = 80;
+  const int tex_page = WallpaperTPage + 1;
+  const int portrait_tex_width = 28;
+  const int portrait_tex_height = 40;
+  const int tex_x_off = 172;
+  const int tex_y_off = *(int *)0x752830;
+  const int tint = 0xffe0e0e0;
+
+  D3D_Render2DObject(
+      portrait_xpos,
+      portrait_ypos,
+      200.f,
+      portrait_width,
+      portrait_height,
+      tex_page,
+      tex_x_off,
+      tex_y_off,
+      portrait_tex_width,
+      portrait_tex_height,
+      tint);
+  if (CurrentFileData.SonicUnlocked != 2) {
+    D3D_Render2DObject(
+        portrait_xpos,
+        portrait_ypos,
+        190.f,
+        portrait_width,
+        portrait_height,
+        tex_page,
+        228,
+        200,
+        portrait_tex_width,
+        portrait_tex_height,
+        tint);
+  }
+}
 
 void __declspec(naked) css_left_bound_fix_1() {
   __asm (
@@ -238,6 +277,9 @@ void CreateTrampolines() {
   // Hook for fixing left bounds on the Character Select Screen
   WriteJump((void *)0x43032c, (void *)&css_left_bound_fix_1);
   WriteJump((void *)0x43034a, (void *)&css_left_bound_fix_2);
+
+  // Hook for rendering Sonic's Character Select Screen portrait
+  WriteCall((void *)0x430699, (void *)&css_draw_sonic_portrait);
 }
 
 extern "C" {
