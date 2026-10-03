@@ -6,6 +6,38 @@
 #include "mod.h"
 #include "config.h"
 
+extern "C" bool internal_css_block_locked_character(int player) {
+  const int* unlocked_characters = &CurrentFileData.SonicUnlocked;
+
+  if (unlocked_characters[Players[player].Character] != 2) {
+    return false;
+  }
+
+  return true;
+}
+
+void __declspec(naked) css_block_locked_character() {
+  __asm (
+    "push %ecx\n\t"
+
+    "push %ebp\n\t"
+    "call _internal_css_block_locked_character\n\t"
+    "add $0x4, %esp\n\t"
+
+    "pop %ecx\n\t"
+    "test %eax, %eax\n\t"
+    "jnz .+0x8\n\t"
+    // If locked, skip
+    "push $0x430082\n\t"
+    "ret\n\t"
+    // If unlocked, business as usual
+    "movl 0x10(%esp), %edx\n\t"
+    "movw (%edx), %ax\n\t"
+    "push $0x42ffe2\n\t"
+    "ret\n\t"
+  );
+}
+
 extern "C" void internal_css_init_character_selection(int player) {
   const int* unlocked_characters = &CurrentFileData.SonicUnlocked;
   for (int i = 0; i <= Characters_EggRobo; ++i) {
@@ -318,6 +350,9 @@ void CreateTrampolines() {
   // Hook for determining character selection if the previously selected
   // character is locked, i.e. if Sonic is locked at the start.
   WriteJump((void *)0x42fdd2, (void *)&css_init_character_selection);
+
+  // Do not allow a character to be selected if they are locked.
+  WriteJump((void *)0x42ffdb, (void *)&css_block_locked_character);
 }
 
 extern "C" {
