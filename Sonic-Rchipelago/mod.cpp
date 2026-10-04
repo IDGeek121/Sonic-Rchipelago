@@ -380,8 +380,8 @@ __declspec(dllexport) void Init() {
 }
 
 __declspec(dllexport) void OnFrame() {
-  /* Check if we've won a race. If so, send. Otherwise, keep them in sync. */
-  int *file_grand_prix_win_array = &CurrentFileData.ResortIslandWon;
+  // Syncing state for what we've received
+  int* const file_grand_prix_win_array = &CurrentFileData.ResortIslandWon;
   bool unlock_radiant_emerald = true;
   for (int i = 0; i < 5; ++i) {
     if (ap::sent_grand_prix_win(static_cast<Courses>(i + 1))) {
@@ -396,7 +396,6 @@ __declspec(dllexport) void OnFrame() {
     file_grand_prix_win_array[4] = 1;
   }
 
-  // Syncing state for what we've received
   int* const file_character_array = &CurrentFileData.SonicUnlocked;
   for (int i = 0; i <= Characters_EggRobo; ++i) {
     const Characters character = static_cast<Characters>(i);
@@ -407,25 +406,36 @@ __declspec(dllexport) void OnFrame() {
     }
   }
 
-  int *file_chaos_emerald_array = &CurrentFileData.BlueEmeraldCollected;
+  int* const file_chaos_emerald_array = &CurrentFileData.BlueEmeraldCollected;
+  bool unlock_super_sonic = true;
   for (int i = 0; i < 7; ++i) {
-    file_chaos_emerald_array[i] = ap::received_chaos_emerald_to_file(i);
-    ChaosEmeraldsCurrentlyCollected[i] = file_chaos_emerald_array[i];
+    const int has_emerald = ap::received_chaos_emerald_to_file(i);
+    file_chaos_emerald_array[i] = has_emerald;
+    ChaosEmeraldsCurrentlyCollected[i] = has_emerald;
+    if (has_emerald != 2) {
+      unlock_super_sonic = false;
+    }
   }
-  CheckSuperSonicUnlockCondition = 1; /* This check only happens at the end of a race. TODO: Find/make a better way to enable Super Sonic. */
+
+  if (unlock_super_sonic) {
+    file_character_array[Characters_SuperSonic] = 2;
+  } else {
+    file_character_array[Characters_SuperSonic] = 1;
+  }
 
   /* If we're in a demo, we aren't in game, so don't collect items. */
   if (InDemo == 1) {
     in_game = 0;
   }
-  if (!(in_game &&
-        CurrentCourse >= Courses_ResortIsland &&
-        CurrentCourse <= Courses_RegalRuin)) {
+  if (!in_game) {
     return;
   }
 
   switch (GameMode) {
   case GameMode_GrandPrix: /* SonicTokens and ChaosEmeralds */
+    if (CurrentCourse == Courses_RadiantEmerald) {
+      break;
+    }
     if (ap::sent_challenge_race_win(static_cast<Courses>(CurrentCourse))) {
       CurrentSonicTokenOrTagCount = 0;
     } else {
