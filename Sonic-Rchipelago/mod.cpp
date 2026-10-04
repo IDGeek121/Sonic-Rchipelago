@@ -6,6 +6,21 @@
 #include "mod.h"
 #include "config.h"
 
+extern "C" bool internal_hud_draw_sonic_tokens_by_challenge_race_win(Courses course) {
+  return ap::sent_challenge_race_win(course);
+}
+
+void __declspec(naked) hud_draw_sonic_tokens_by_challenge_race_win() {
+  __asm(
+      "push %eax\n\t"
+      "call _internal_hud_draw_sonic_tokens_by_challenge_race_win\n\t"
+      "add $0x4, %esp\n\t"
+      "cmpl $0x1, %eax\n\t"
+      "push $0x43e77f\n\t"
+      "ret"
+  );
+}
+
 extern "C" bool internal_css_block_locked_character(int player) {
   const int* unlocked_characters = &CurrentFileData.SonicUnlocked;
 
@@ -353,6 +368,9 @@ void CreateTrampolines() {
 
   // Do not allow a character to be selected if they are locked.
   WriteJump((void *)0x42ffdb, (void *)&css_block_locked_character);
+
+  // Display Sonic Token HUD based on challenge race wins, not character unlocks.
+  WriteJump((void *)0x43e777, (void *)&hud_draw_sonic_tokens_by_challenge_race_win);
 }
 
 extern "C" {
