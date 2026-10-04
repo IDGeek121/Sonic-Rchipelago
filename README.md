@@ -10,6 +10,7 @@ Locations:
 Items:
 * Progressive Sonic Tokens
 * Chaos Emeralds
+* Character Unlocks
 * 50 Rings (filler)
 
 # Building
