@@ -1,0 +1,6 @@
+[submodule "vendor/APCpp"]
+	path = vendor/APCpp
+	url = https://github.com/IDGeek121/APCpp.git
+[submodule "vendor/sonicr-mod-loader"]
+	path = vendor/sonicr-mod-loader
+	url = https://github.com/IDGeek121/sonicr-mod-loader.git

@@ -27,6 +27,10 @@ The CMake project is based off ClassicSpeed's sadx-classic-randomizer. It depend
 
 This CMake project has only been validated for building on Arch Linux with MinGW. Variables for cross compiling are set via the TC-mingw.cmake toolchain file. Other platforms with MinGW may work but will probably require creating a modified TC-mingw.cmake file. I plan to add support for MinGW on Windows via MSYS at some point in the future (and maybe MSVC, but then I'd have to change how I'm doing assembly).
 
+First, clone the repository recursively:
+
+    git clone --recurse-submodules https://github.com/IDGeek121/Sonic-Rchipelago.git
+
 With MinGW installed, in the root of this repository, run the following to configure the project:
 
     cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=./TC-mingw.cmake
