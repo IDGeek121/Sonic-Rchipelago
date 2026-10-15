@@ -14,3 +14,10 @@ if (MINGW)
 endif (MINGW)
 
 set_target_properties(Sonic-Rchipelago PROPERTIES PREFIX "" OUTPUT_NAME "Sonic-Rchipelago")
+
+add_custom_command(
+  TARGET Sonic-Rchipelago
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND}
+  ARGS -E copy $<TARGET_FILE:Sonic-Rchipelago> ${CMAKE_SOURCE_DIR}/mods/Sonic-Rchipelago
+)

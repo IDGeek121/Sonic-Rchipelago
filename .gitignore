@@ -1,3 +1,4 @@
 build
 .clangd
 compile_commands.json
+mods/Sonic-Rchipelago/Sonic-Rchipelago.dll

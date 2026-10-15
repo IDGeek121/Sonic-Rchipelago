@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ConfigSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
+  <Groups>
+    <Group name="general" display="1. Settings">
+      <Property name="host" display="Host" type="string" defaultvalue="localhost:38281">
+        <HelpText>address:port for Archipelago server.</HelpText>
+      </Property>
+      <Property name="slot" display="Slot" type="string" defaultvalue="">
+        <HelpText>Slot/Player name.</HelpText>
+      </Property>
+      <Property name="password" display="Password" type="string" defaultvalue="">
+        <HelpText>Password, if Slot is password-protected.</HelpText>
+      </Property>
+    </Group>
+  </Groups>
+</ConfigSchema>
