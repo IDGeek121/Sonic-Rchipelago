@@ -2,7 +2,7 @@
 
 namespace config {
   void read_config(struct config::Config* config) {
-    const IniFile config_file = IniFile("mods/Sonic-Rrchipelago/config.ini");
+    const IniFile config_file = IniFile("mods/Sonic-Rchipelago/config.ini");
 
     config->host = config_file.getString("general", "host", "");
     config->slot = config_file.getString("general", "slot", "");
