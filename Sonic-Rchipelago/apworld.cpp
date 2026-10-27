@@ -11,11 +11,12 @@ namespace {
     // Items received
     int received_sonic_tokens[4]; // Only the count of tokens matters
     int received_chaos_emeralds[7];
-    bool received_characters[9]; // TODO: Figure out if Sonic can be locked
+    bool received_characters[9];
+    bool received_courses[4];
 
     // Items sent
-    int sent_sonic_tokens[4][5]; // Each individual token matters
-    int sent_chaos_emeralds[4]; // 1 = Chaos Emerald 1, 2 = Chaos Emerald 2. Logical OR
+    bool sent_sonic_tokens[4][5]; // Each individual token matters
+    unsigned char sent_chaos_emeralds[4]; // 1 = Chaos Emerald 1, 2 = Chaos Emerald 2. Logical OR
     bool sent_grand_prix_wins[5];
     bool sent_challenge_race_wins[4];
   };
