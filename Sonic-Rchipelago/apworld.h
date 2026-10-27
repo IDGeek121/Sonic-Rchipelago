@@ -74,7 +74,9 @@ namespace ap {
   };
 
   void init(const char*, const char*, const char*);
+  const unsigned char get_difficulty();
   const struct message* get_message();
+  const unsigned char get_weather();
   int received_chaos_emerald_to_file(int i);
   bool received_character(Characters i);
   int received_sonic_tokens(Courses course);

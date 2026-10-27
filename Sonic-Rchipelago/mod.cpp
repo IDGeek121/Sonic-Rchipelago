@@ -399,6 +399,9 @@ __declspec(dllexport) void Init() {
 
 __declspec(dllexport) void OnFrame() {
   // Syncing state for what we've received
+  WeatherSetting = static_cast<enum WeatherSetting>(ap::get_weather());
+  Difficulty = static_cast<enum Difficulty>(ap::get_difficulty());
+
   int* const file_grand_prix_win_array = &CurrentFileData.ResortIslandWon;
   bool unlock_radiant_emerald = true;
   for (int i = 0; i < 5; ++i) {

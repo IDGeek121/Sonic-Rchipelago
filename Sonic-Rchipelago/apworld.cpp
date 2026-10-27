@@ -8,6 +8,10 @@ namespace {
 
     std::string slot;
 
+    // Slot data
+    unsigned char difficulty;
+    unsigned char weather;
+
     // Items received
     int received_sonic_tokens[4]; // Only the count of tokens matters
     int received_chaos_emeralds[7];
@@ -34,6 +38,8 @@ namespace {
   void location_checked_chaos_emerald(int id);
   void location_checked_grand_prix_win(int id);
   void location_checked_sonic_token(int id);
+  void slot_data_difficulty(int difficulty);
+  void slot_data_weather(int weather);
 
   struct Game_state game_state;
 
@@ -191,9 +197,21 @@ namespace {
 
     game_state.sent_sonic_tokens[course - Courses_ResortIsland][i] = 1;
   }
+
+  void slot_data_difficulty(int difficulty) {
+    game_state.difficulty = static_cast<unsigned char>(difficulty);
+  }
+
+  void slot_data_weather(int weather) {
+    game_state.weather = static_cast<unsigned char>(weather);
+  }
 }
 
 namespace ap {
+  const unsigned char get_difficulty() {
+    return game_state.difficulty;
+  }
+
   const struct message* get_message() {
     if (game_state.message.time > 0) {
       game_state.message.time--;
@@ -218,12 +236,19 @@ namespace ap {
     return &game_state.message;
   }
 
+  const unsigned char get_weather() {
+    return game_state.weather;
+  }
+
   void init(const char *host, const char *slot, const char *password) {
     AP_Init(host, "Sonic R", slot, password);
 
     AP_SetItemClearCallback(&item_clear);
     AP_SetItemRecvCallback(&item_recv);
     AP_SetLocationCheckedCallback(&location_checked);
+
+    AP_RegisterSlotDataIntCallback("difficulty", &slot_data_difficulty);
+    AP_RegisterSlotDataIntCallback("weather", &slot_data_weather);
 
     game_state.slot = slot;
 
