@@ -31,6 +31,7 @@ namespace {
   void item_recv(int id, bool notify);
   void item_recv_chaos_emerald(int id);
   void item_recv_character(int id);
+  void item_recv_course(int id);
   void item_recv_ring(int id);
   void item_recv_sonic_token(int id);
   void location_checked(int id);
@@ -73,6 +74,9 @@ namespace {
     for (int i = 0; i <= Characters_EggRobo; ++i) {
       game_state.received_characters[i] = 0;
     }
+    for (int i = 0; i <= 3; ++i) {
+      game_state.received_courses[i] = 0;
+    }
     for (int i = 0; i < 5; ++i) {
       game_state.sent_grand_prix_wins[i] = 0;
     }
@@ -111,6 +115,12 @@ namespace {
     case ap::item::EggRobo:
       item_recv_character(id);
       break;
+    case ap::item::ResortIsland:
+    case ap::item::RadicalCity:
+    case ap::item::ReactiveFactory:
+    case ap::item::RegalRuin:
+      item_recv_course(id);
+      break;
     case ap::item::Ring:
       item_recv_ring(50);
       break;
@@ -130,6 +140,12 @@ namespace {
     PrintDebug("item_recv_character(%d)\n", id);
 
     game_state.received_characters[id - ap::item::Sonic] = true;
+  }
+
+  void item_recv_course(int id) {
+    PrintDebug("item_recv_course(%d)\n", id);
+
+    game_state.received_courses[id - ap::item::ResortIsland] = true;
   }
 
   void item_recv_ring(int count) {
@@ -286,6 +302,10 @@ namespace ap {
 
   bool received_character(Characters i) {
     return game_state.received_characters[i];
+  }
+
+  bool received_course(Courses course) {
+    return game_state.received_courses[course - Courses_ResortIsland];
   }
 
   // Return number of Sonic Tokens that have been received for a given course.

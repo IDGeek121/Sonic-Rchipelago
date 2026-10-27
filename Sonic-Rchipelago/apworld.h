@@ -32,6 +32,10 @@ namespace ap {
     TailsDoll,
     MetalKnuckles,
     EggRobo,
+    ResortIsland,
+    RadicalCity,
+    ReactiveFactory,
+    RegalRuin,
   };
 
   enum location {
@@ -79,6 +83,7 @@ namespace ap {
   const unsigned char get_weather();
   int received_chaos_emerald_to_file(int i);
   bool received_character(Characters i);
+  bool received_course(Courses course);
   int received_sonic_tokens(Courses course);
   void send_item_challenge_race_win(Courses course);
   void send_item_chaos_emerald(Courses course, int i);

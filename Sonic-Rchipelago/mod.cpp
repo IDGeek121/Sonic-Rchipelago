@@ -371,6 +371,22 @@ void CreateTrampolines() {
 
   // Display Sonic Token HUD based on challenge race wins, not character unlocks.
   WriteJump((void *)0x43e777, (void *)&hud_draw_sonic_tokens_by_challenge_race_win);
+
+  // Hooks for left and right press on Course Select Screen
+  WriteCall((void *)0x430c4c, (void *)&coursess_left_side_check);
+  WriteData<26>((uint8_t *)0x430c51, (uint8_t)0x90);
+  WriteCall((void *)0x430c94, (void *)&coursess_right_side_check);
+  WriteData<37>((uint8_t *)0x430c99, (uint8_t)0x90);
+
+  // Hook for rendering Course Select Screen portraits
+  WriteCall((void *)0x430da9, (void *)&coursess_draw_course_portrait);
+
+  // Do not allow a course to be selected if it is locked.
+  WriteJump((void *)0x430b47, (void *)&coursess_block_locked_course);
+
+  // Hook for determining course selection if the previously selected course
+  // is locked.
+  WriteJump((void *)0x430a2d, (void *)&coursess_init_course_selection);
 }
 
 extern "C" {

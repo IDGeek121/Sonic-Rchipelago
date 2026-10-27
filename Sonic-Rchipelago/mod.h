@@ -154,6 +154,7 @@ struct FileData {
 };
 
 DataPointer(struct FileData, CurrentFileData, 0x752BC8);
+DataArray(struct PlayerMenuController, PlayerMenuControllers, 0x752850, 4);
 DataPointer(int, CurrentSonicTokenOrTagCount, 0x75356C);
 DataArray(int, ChaosEmeraldsCurrentlyCollected, 0x5018C4, 7); /* Used for determining if Super Sonic is unlocked. */
 DataPointer(int, CheckSuperSonicUnlockCondition, 0x50215C);
@@ -195,6 +196,19 @@ enum WeatherSetting {
   WeatherSetting_Snow,
 };
 
+struct PlayerMenuController {
+  int CurrentSelection;
+  int CursorXPosition;
+  int CursorXPositionTarget;
+  int CursorXPositionRender;
+  int field4_0x10;
+  int field5_0x14;
+  int field6_0x18;
+  int field7_0x1c;
+  int field8_0x20;
+  int field9_0x24;
+};
+
 const unsigned int TrackArrayLength = 1024;
 DataPointer(TrackArrayEntry*, TrackArray, 0x5F3870);
 DataPointer(int, InDemo, 0x73604C);
@@ -207,6 +221,7 @@ DataPointer(int, SceneFrameCount, 0x7AF154);
 DataPointer(enum Difficulty, Difficulty, 0x7AF158);
 DataPointer(enum WeatherSetting, WeatherSetting, 0x7AF160);
 DataPointer(int, TPageBufferIndex_TextAtlas, 0x754650);
+FunctionPointer(void, PlaySoundEffect, (int slot, int, int, int), 0x42A120);
 FunctionPointer(void, D3D_SetSamplerState, (unsigned int val), 0x441D00);
 FunctionPointer(void, D3D_SetBlendMode, (int val), 0x441D60);
 FunctionPointer(void, D3D_SetDepthBuffering, (int val), 0x441DE0);
