@@ -6,12 +6,115 @@
 #include "mod.h"
 #include "config.h"
 
+bool coursess_received_course(int selection) {
+  switch (selection) {
+  case 3:
+    return ap::received_course(Courses_ReactiveFactory);
+    break;
+  case 2:
+    return ap::received_course(Courses_RegalRuin);
+    break;
+  default:
+    return ap::received_course(static_cast<Courses>(selection + Courses_ResortIsland));
+  }
+}
+
+extern "C" int internal_coursess_init_course_selection() {
+  DataPointer(int, previously_selected_course, 0x4afc7c);
+
+  if (!coursess_received_course(previously_selected_course)) {
+    previously_selected_course = 0;
+
+    for (int i = 0; i <= 3; ++i) {
+      if (coursess_received_course(i)) {
+        previously_selected_course = i;
+        break;
+      }
+    }
+  }
+
+  return previously_selected_course;
+}
+
+void __declspec(naked) coursess_init_course_selection() {
+  __asm (
+    "push %ecx\n\t"
+
+    "call _internal_coursess_init_course_selection\n\t"
+
+    "pop %ecx\n\t"
+    "push $0x430a41\n\t"
+    "ret\n\t"
+  );
+}
+
+extern "C" bool internal_coursess_block_locked_course(int selection) {
+  return coursess_received_course(selection);
+}
+
+void __declspec(naked) coursess_block_locked_course() {
+  __asm (
+    "movl (0x752850), %eax\n\t"
+    "push %eax\n\t"
+    "call _internal_coursess_block_locked_course\n\t"
+    "test %eax, %eax\n\t"
+    "pop %eax\n\t"
+    "jnz .+0x8\n\t"
+    // If locked, skip
+    "push $0x430b9f\n\t"
+    "ret\n\t"
+    // Else, proceed
+    "push $0x430b4c\n\t"
+    "ret\n\t"
+  );
+}
+
+
+void coursess_draw_course_portrait(int samplerstate) {
+  D3D_SetSamplerState(samplerstate);
+  DataArray(int, CourseSelectScreen_PortraitXPos, 0x45f1b4, 4);
+
+  for (int i = 0; i < 4; ++i) {
+    if (!coursess_received_course(i)) {
+      D3D_Render2DObject(CourseSelectScreen_PortraitXPos[i] * 2, 0x168, 279.f, 0x70, 0x60, WallpaperTPage + 1, 0x90, 0x90, 0x38, 0x30, 0xffe0e0e0);
+    }
+  }
+}
+
+// Important to note that Regal Ruin and Reactive Factory are index 3 and 2
+// respectively, which is different from the displayed order.
+void coursess_left_side_check() {
+  int temp_cursor_position = PlayerMenuControllers[0].CurrentSelection - 1;
+  while (temp_cursor_position >= 0) {
+    if (coursess_received_course(temp_cursor_position)) {
+      PlayerMenuControllers[0].CurrentSelection = temp_cursor_position;
+      PlaySoundEffect(1, 0, 0, 0);
+      return;
+    }
+    --temp_cursor_position;
+  }
+}
+
+void coursess_right_side_check() {
+  int temp_cursor_position = PlayerMenuControllers[0].CurrentSelection + 1;
+
+  while (temp_cursor_position <= 4) {
+    if ((temp_cursor_position < 4 && coursess_received_course(temp_cursor_position)) ||
+        (temp_cursor_position == 4 && CurrentFileData.RadiantEmeraldWon != 0)) {
+      PlayerMenuControllers[0].CurrentSelection = temp_cursor_position;
+      PlaySoundEffect(1, 0, 0, 0);
+      return;
+    }
+    ++temp_cursor_position;
+  }
+}
+
 extern "C" bool internal_hud_draw_sonic_tokens_by_challenge_race_win(Courses course) {
   return ap::sent_challenge_race_win(course);
 }
 
 void __declspec(naked) hud_draw_sonic_tokens_by_challenge_race_win() {
-  __asm(
+  __asm (
       "push %eax\n\t"
       "call _internal_hud_draw_sonic_tokens_by_challenge_race_win\n\t"
       "add $0x4, %esp\n\t"
@@ -348,7 +451,8 @@ void CreateTrampolines() {
 
   WriteCall((void *)0x444596, (void *)&goal);
 
-  // Don't set Chaos Emerald or Sonic Token visibility based on file status. We will set this based on location sent status.
+  // Don't set Chaos Emerald or Sonic Token visibility based on file status. We
+  // will set this based on location sent status.
   WriteJump((void *)0x4279a1, (void *)0x427aa3);
 
   // Hook for rendering text before D3D_ScreenSwap
