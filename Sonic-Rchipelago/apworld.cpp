@@ -6,6 +6,8 @@ namespace {
   struct Game_state {
     struct ap::message message;
 
+    std::string slot;
+
     // Items received
     int received_sonic_tokens[4]; // Only the count of tokens matters
     int received_chaos_emeralds[7];
@@ -37,7 +39,11 @@ namespace {
   std::string get_message_item_recv(AP_ItemRecvMessage* message) {
     std::stringstream stream;
 
-    stream << "Received " << message->item << " from " << message->sendPlayer;
+    if (game_state.slot == message->sendPlayer) {
+      stream << "Found " << message->item;
+    } else {
+      stream << "Received " << message->item << " from " << message->sendPlayer;
+    }
 
     return stream.str();
   }
@@ -200,6 +206,7 @@ namespace ap {
         break;
       case AP_MessageType::ItemRecv:
         game_state.message.text = get_message_item_recv(dynamic_cast<AP_ItemRecvMessage*>(message));
+        break;
       default:
         game_state.message.text = message->text;
         break;
@@ -216,6 +223,8 @@ namespace ap {
     AP_SetItemClearCallback(&item_clear);
     AP_SetItemRecvCallback(&item_recv);
     AP_SetLocationCheckedCallback(&location_checked);
+
+    game_state.slot = slot;
 
     AP_Start();
   }
