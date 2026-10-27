@@ -7,6 +7,8 @@ Goal:
 ** All 7 Chaos Emeralds must be found
 ** The four original courses must be won to unlock Radiant Emerald
 
+To start, you are given at least one character item and one course item, and you are given two other character or course items at random. At some point I will make this configurable, but a compromise like this is required since there are not enough locations implemented for the number of items.
+
 Locations:
 * Sonic Tokens
 * Chaos Emeralds
@@ -17,7 +19,8 @@ Items:
 * Progressive Sonic Tokens
 * Chaos Emeralds
 * Character Unlocks
-* 50 Rings (filler)
+* Course Unlocks
+* 50 Rings (filler, and not actually reachable with the current APWorld. Not enough locations)
 
 ## How to use
 [Refer to the APWorld documentation for instructions on how to use.](https://github.com/IDGeek121/Archipelago/blob/main/worlds/sonic_r/docs/setup_en.md)
